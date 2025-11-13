@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # MongoDB Service (using Atlas - connection only, no container needed)
+  
+  # Backend Service
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: vrajpatel0596/fitness-tracker-server:latest
+    container_name: fitness-server
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MONGODB_URI=mongodb+srv://DevOPS:dRf9C758nMIo9Hkq@project1.calrd.mongodb.net/?appName=project1
+    restart: unless-stopped
+    networks:
+      - fitness-network
+
+  # Frontend Service
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: vrajpatel0596/fitness-tracker-client:latest
+    container_name: fitness-client
+    ports:
+      - "8081:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+    networks:
+      - fitness-network
+
+networks:
+  fitness-network:
+    driver: bridge
